@@ -94,6 +94,28 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
         return core.numberOfItems(inSection: section)
     }
 
+    /// Returns the title for the specified section's header.
+    ///
+    /// - Parameters:
+    ///   - tableView: A table view instance managed by `self`.
+    ///   - section: An index of section.
+    ///
+    /// - Returns: The title for the specified section's header, or `nil` for no title.
+    open func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return nil
+    }
+
+    /// Returns the title for the specified section's footer.
+    ///
+    /// - Parameters:
+    ///   - tableView: A table view instance managed by `self`.
+    ///   - section: An index of section.
+    ///
+    /// - Returns: The title for the specified section's footer, or `nil` for no title.
+    open func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return nil
+    }
+
     /// Returns a cell for row at specified index path.
     ///
     /// - Parameters:
