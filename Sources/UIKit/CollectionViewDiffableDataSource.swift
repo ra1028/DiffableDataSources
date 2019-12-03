@@ -47,7 +47,7 @@ open class CollectionViewDiffableDataSource<SectionIdentifierType: Hashable, Ite
             view: collectionView,
             animatingDifferences: animatingDifferences,
             performUpdates: { collectionView, changeset, setSections in
-                collectionView.reload(using: changeset, setData: setSections)
+                collectionView.reload(using: changeset, setData: setSections, completion: completion)
         })
     }
 
