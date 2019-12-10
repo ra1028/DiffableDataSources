@@ -10,6 +10,8 @@ jobs:
     matrix:
       xcode10_2:
         DEVELOPER_DIR: /Applications/Xcode_10.2.app
+      xcode11_2_1:
+        DEVELOPER_DIR: /Applications/Xcode_11.2.1.app
   steps:
     - checkout: self
       submodules: true
@@ -24,7 +26,7 @@ jobs:
       condition: succeededOrFailed()
     - script: |
         set -o pipefail &&
-        xcodebuild build-for-testing test-without-building -workspace DiffableDataSources.xcworkspace -scheme DiffableDataSources -configuration Release -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' ENABLE_TESTABILITY=YES |
+        xcodebuild build-for-testing test-without-building -workspace DiffableDataSources.xcworkspace -scheme DiffableDataSources -configuration Release -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' ENABLE_TESTABILITY=YES |
         xcpretty -c -r junit -o build/reports/xcodebuild-iOS.xml
       displayName: xcodebuild test iOS
       condition: succeededOrFailed()
