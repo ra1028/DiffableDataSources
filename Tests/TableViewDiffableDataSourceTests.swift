@@ -22,21 +22,29 @@ final class TableViewDiffableDataSourceTests: XCTestCase {
 
         var snapshot = DiffableDataSourceSnapshot<Int, Int>()
 
-        dataSource.apply(snapshot)
+        let e1 = expectation(description: "testApply() e1")
+        dataSource.apply(snapshot, completion: e1.fulfill)
+        wait(for: [e1], timeout: 1)
         XCTAssertEqual(tableView.isPerformBatchUpdatesCalledCount, 0)
 
         snapshot.appendSections([0])
         snapshot.appendItems([0])
 
-        dataSource.apply(snapshot)
+        let e2 = expectation(description: "testApply() e2")
+        dataSource.apply(snapshot, completion: e2.fulfill)
+        wait(for: [e2], timeout: 1)
         XCTAssertEqual(tableView.isPerformBatchUpdatesCalledCount, 1)
 
-        dataSource.apply(snapshot)
+        let e3 = expectation(description: "testApply() e3")
+        dataSource.apply(snapshot, completion: e3.fulfill)
+        wait(for: [e3], timeout: 1)
         XCTAssertEqual(tableView.isPerformBatchUpdatesCalledCount, 1)
 
         snapshot.appendItems([1])
 
-        dataSource.apply(snapshot)
+        let e4 = expectation(description: "testApply() e4")
+        dataSource.apply(snapshot, completion: e4.fulfill)
+        wait(for: [e4], timeout: 1)
         XCTAssertEqual(tableView.isPerformBatchUpdatesCalledCount, 2)
     }
 
