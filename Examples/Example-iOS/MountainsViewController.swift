@@ -50,7 +50,7 @@ final class MountainsViewController: UIViewController {
             .filter { $0.contains(filter) }
             .sorted { $0.name < $1.name }
 
-        let snapshot = DiffableDataSourceSnapshot<Section, Mountain>()
+        var snapshot = DiffableDataSourceSnapshot<Section, Mountain>()
         snapshot.appendSections([.main])
         snapshot.appendItems(mountains)
         dataSource.apply(snapshot)

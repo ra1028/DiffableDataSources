@@ -42,7 +42,7 @@ final class TopViewController: UIViewController {
     }
 
     func reset() {
-        let snapshot = DiffableDataSourceSnapshot<Section, Item>()
+        var snapshot = DiffableDataSourceSnapshot<Section, Item>()
         snapshot.appendSections([.main])
         snapshot.appendItems([.mountains, .insertionSort])
         dataSource.apply(snapshot)

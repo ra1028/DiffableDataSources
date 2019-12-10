@@ -107,7 +107,7 @@ final class InsertionSortViewController: UIViewController {
     }
 
     func randmize(animated: Bool) {
-        let snapshot = DiffableDataSourceSnapshot<Section, Node>()
+        var snapshot = DiffableDataSourceSnapshot<Section, Node>()
         let rows = Int(collectionView.bounds.height / nodeSize.height) - 1
         let columns = Int(collectionView.bounds.width / nodeSize.width)
 
@@ -126,7 +126,7 @@ final class InsertionSortViewController: UIViewController {
         }
 
         var isNextSortRequired = false
-        let snapshot = dataSource.snapshot()
+        var snapshot = dataSource.snapshot()
 
         for section in snapshot.sectionIdentifiers where !section.isSorted {
             section.sortNext()
