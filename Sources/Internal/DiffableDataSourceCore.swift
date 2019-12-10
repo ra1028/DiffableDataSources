@@ -13,7 +13,8 @@ final class DiffableDataSourceCore<SectionIdentifierType: Hashable, ItemIdentifi
         _ snapshot: DiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>,
         view: View?,
         animatingDifferences: Bool,
-        performUpdates: @escaping (View, StagedChangeset<[Section]>, @escaping ([Section]) -> Void) -> Void
+        performUpdates: @escaping (View, StagedChangeset<[Section]>, @escaping ([Section]) -> Void) -> Void,
+        completion: (() -> Void)?
         ) {
         dispatcher.dispatch { [weak self] in
             guard let self = self else {
@@ -35,15 +36,18 @@ final class DiffableDataSourceCore<SectionIdentifierType: Hashable, ItemIdentifi
                 }
             }
 
+            CATransaction.begin()
+            CATransaction.setCompletionBlock(completion)
+
             if animatingDifferences {
                 performDiffingUpdates()
             }
             else {
-                CATransaction.begin()
                 CATransaction.setDisableActions(true)
                 performDiffingUpdates()
-                CATransaction.commit()
             }
+
+            CATransaction.commit()
         }
     }
 
