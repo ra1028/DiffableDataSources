@@ -144,7 +144,9 @@ let snapshot = DiffableDataSourceSnapshot<Section, User>()
 snapshot.appendSections([.main])
 snapshot.appendItems(users)
 
-dataSource.apply(snapshot)
+dataSource.apply(snapshot) {
+    // completion
+}
 ```
 
 Check the documentation for more detailed API.  
