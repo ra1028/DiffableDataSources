@@ -3,11 +3,13 @@ import DifferenceKit
 
 struct SnapshotStructure<SectionID: Hashable, ItemID: Hashable> {
     struct Item: Differentiable, Equatable {
-        var differenceIdentifier: ItemID
+        var differenceIdentifier: Int
+        var identifier: ItemID
         var isReloaded: Bool
 
         init(id: ItemID, isReloaded: Bool) {
-            self.differenceIdentifier = id
+            self.identifier = id
+            self.differenceIdentifier = id.hashValue
             self.isReloaded = isReloaded
         }
 
@@ -16,7 +18,7 @@ struct SnapshotStructure<SectionID: Hashable, ItemID: Hashable> {
         }
 
         func isContentEqual(to source: Item) -> Bool {
-            return !isReloaded && differenceIdentifier == source.differenceIdentifier
+            return !isReloaded && identifier == source.identifier
         }
     }
 
@@ -53,7 +55,7 @@ struct SnapshotStructure<SectionID: Hashable, ItemID: Hashable> {
     var allItemIDs: [ItemID] {
         return sections.lazy
             .flatMap { $0.elements }
-            .map { $0.differenceIdentifier }
+            .map { $0.identifier }
     }
 
     func items(in sectionID: SectionID, file: StaticString = #file, line: UInt = #line) -> [ItemID] {
@@ -61,7 +63,7 @@ struct SnapshotStructure<SectionID: Hashable, ItemID: Hashable> {
             specifiedSectionIsNotFound(sectionID, file: file, line: line)
         }
 
-        return sections[sectionIndex].elements.map { $0.differenceIdentifier }
+        return sections[sectionIndex].elements.map { $0.identifier }
     }
 
     func section(containing itemID: ItemID) -> SectionID? {
@@ -270,7 +272,7 @@ private extension SnapshotStructure {
     func itemPositionMap() -> [ItemID: ItemPosition] {
         return sections.enumerated().reduce(into: [:]) { result, section in
             for (itemRelativeIndex, item) in section.element.elements.enumerated() {
-                result[item.differenceIdentifier] = ItemPosition(
+                result[item.identifier] = ItemPosition(
                     item: item,
                     itemRelativeIndex: itemRelativeIndex,
                     section: section.element,
