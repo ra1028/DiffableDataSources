@@ -35,7 +35,7 @@ struct SnapshotStructure<SectionID: Hashable, ItemID: Hashable> {
             self.init(id: id, items: [], isReloaded: false)
         }
 
-        init<C: Collection>(source: Section, elements: C) where C.Element == Item {
+        init<C: Swift.Collection>(source: Section, elements: C) where C.Element == Item {
             self.init(id: source.differenceIdentifier, items: Array(elements), isReloaded: source.isReloaded)
         }
 
