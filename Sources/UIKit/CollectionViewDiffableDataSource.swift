@@ -132,6 +132,29 @@ open class CollectionViewDiffableDataSource<SectionIdentifierType: Hashable, Ite
 
         return view
     }
+
+    /// Returns whether it is possible to edit a row at given index path.
+    ///
+    /// - Parameters:
+    ///   - collectionView: A collection view instance managed by `self`.
+    ///   - section: An index of section.
+    ///
+    /// - Returns: A boolean for row at specified index path.
+    open func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
+        return false
+    }
+
+    /// Moves a row at given index path.
+    ///
+    /// - Parameters:
+    ///   - collectionView: A collection view instance managed by `self`.
+    ///   - sourceIndexPath: An index path for given cell position.
+    ///   - destinationIndexPath: An index path for target cell position.
+    ///
+    /// - Returns: Void.
+    public func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        // Empty implementation.
+    }
 }
 
 #endif
