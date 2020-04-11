@@ -167,6 +167,24 @@ final class CollectionViewDiffableDataSourceTests: XCTestCase {
             cell
         )
     }
+
+    func testCanMoveRowAt() {
+        let collectionView = MockCollectionView()
+        let cell = UICollectionViewCell()
+        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView) { _, _, _ in
+            cell
+        }
+
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        snapshot.appendSections([0, 1, 2])
+        snapshot.appendItems([0, 1, 2], toSection: 0)
+        dataSource.apply(snapshot)
+
+        XCTAssertEqual(
+            dataSource.collectionView(collectionView, canMoveItemAt: IndexPath(item: 1, section: 0)),
+            false
+        )
+    }
 }
 
 final class MockCollectionView: UICollectionView {

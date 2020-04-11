@@ -167,6 +167,42 @@ final class TableViewDiffableDataSourceTests: XCTestCase {
             cell
         )
     }
+
+    func testCanEditRowAt() {
+        let tableView = MockTableView()
+        let cell = UITableViewCell()
+        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView) { _, _, _ in
+            cell
+        }
+
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        snapshot.appendSections([0, 1, 2])
+        snapshot.appendItems([0, 1, 2], toSection: 0)
+        dataSource.apply(snapshot)
+
+        XCTAssertEqual(
+            dataSource.tableView(tableView, canEditRowAt: IndexPath(item: 1, section: 0)),
+            false
+        )
+    }
+
+    func testCanMoveRowAt() {
+        let tableView = MockTableView()
+        let cell = UITableViewCell()
+        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView) { _, _, _ in
+            cell
+        }
+
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        snapshot.appendSections([0, 1, 2])
+        snapshot.appendItems([0, 1, 2], toSection: 0)
+        dataSource.apply(snapshot)
+
+        XCTAssertEqual(
+            dataSource.tableView(tableView, canMoveRowAt: IndexPath(item: 1, section: 0)),
+            false
+        )
+    }
 }
 
 final class MockTableView: UITableView {

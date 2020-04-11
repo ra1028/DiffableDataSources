@@ -135,6 +135,56 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
 
         return cell
     }
+
+    /// Returns whether it is possible to edit a row at given index path.
+    ///
+    /// - Parameters:
+    ///   - tableView: A table view instance managed by `self`.
+    ///   - section: An index of section.
+    ///
+    /// - Returns: A boolean for row at specified index path.
+    open func tableView(_ tableView: UITableView, canEditRowAt: IndexPath) -> Bool {
+        return false
+    }
+
+    /// Returns whether it is possible to move a row at given index path.
+    ///
+    /// - Parameters:
+    ///   - tableView: A table view instance managed by `self`.
+    ///   - section: An index of section.
+    ///
+    /// - Returns: A boolean for row at specified index path.
+    open func tableView(_ tableView: UITableView, canMoveRowAt _: IndexPath) -> Bool {
+        return false
+    }
+
+    /// Performs the edit action for a row at given index path.
+    ///
+    /// - Parameters:
+    ///   - tableView: A table view instance managed by `self`.
+    ///   - editingStyle: An action for given edit action.
+    ///   - indexPath: An index path for cell.
+    ///
+    /// - Returns: Void.
+    open func tableView(_ tableView: UITableView, commit _: UITableViewCell.EditingStyle, forRowAt _: IndexPath) {
+        // Empty implementation.
+    }
+
+    /// Moves a row at given index path.
+    ///
+    /// - Parameters:
+    ///   - tableView: A table view instance managed by `self`.
+    ///   - source: An index path for given cell position.
+    ///   - target: An index path for target cell position.
+    ///
+    /// - Returns: Void.
+    open func tableView(_ tableView: UITableView, moveRowAt _: IndexPath, to _: IndexPath) {
+        // Empty implementation.
+    }
+
+    open func tableView(_ tableView: UITableView, sectionForSectionIndexTitle _: String, at section: Int) -> Int {
+        return section
+    }
 }
 
 #endif
