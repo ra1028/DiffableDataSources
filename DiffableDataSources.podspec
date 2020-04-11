@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name = 'DiffableDataSources'
-  spec.version  = '0.3.0'
+  spec.version  = `cat .version`
   spec.author = { 'ra1028' => 'r.fe51028.r@gmail.com' }
   spec.homepage = 'https://github.com/ra1028/DiffableDataSources'
   spec.documentation_url = 'https://ra1028.github.io/DiffableDataSources'
