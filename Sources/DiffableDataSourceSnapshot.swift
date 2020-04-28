@@ -8,12 +8,16 @@ public struct DiffableDataSourceSnapshot<SectionIdentifierType: Hashable, ItemId
 
     /// The number of item identifiers in the snapshot.
     public var numberOfItems: Int {
-        return itemIdentifiers.count
+        var count = 0
+        for section in structure.sections {
+            count += numberOfItems(inSection: section.differenceIdentifier)
+        }
+        return count
     }
 
     /// The number of section identifiers in the snapshot.
     public var numberOfSections: Int {
-        return sectionIdentifiers.count
+        return structure.sections.count
     }
 
     /// All section identifiers in the snapshot.
@@ -33,7 +37,7 @@ public struct DiffableDataSourceSnapshot<SectionIdentifierType: Hashable, ItemId
     ///
     /// - Returns: The number of item identifiers in the specified section.
     public func numberOfItems(inSection identifier: SectionIdentifierType) -> Int {
-        return itemIdentifiers(inSection: identifier).count
+        return structure.numberOfItems(in: identifier)
     }
 
     /// Returns the item identifiers in the specified section.
