@@ -182,6 +182,24 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
         // Empty implementation.
     }
 
+    /// Return list of section titles to display in section index view (e.g. "ABCD...Z#").
+    ///
+    /// - Parameters:
+    ///   - tableView: A table view instance managed by `self`.
+    ///
+    /// - Returns: The list of section titles to display.
+    open func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+        return nil
+    }
+
+    /// Tell table which section corresponds to section title/index (e.g. "B",1)).
+    ///
+    /// - Parameters:
+    ///   - tableView: A table view instance managed by `self`.
+    ///   - title: The title as displayed in the section index of tableView.
+    ///   - section: An index number identifying a section title in the array returned by sectionIndexTitles(for tableView:).
+    ///
+    /// - Returns: The list of section titles to display.
     open func tableView(_ tableView: UITableView, sectionForSectionIndexTitle _: String, at section: Int) -> Int {
         return section
     }
