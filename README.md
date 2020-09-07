@@ -91,7 +91,7 @@ $ open DiffableDataSources.xcworkspace
 
 First, define the type representing section.  
 It should conforms to `Hashable` for identifies from the all sections.  
-Type of enum can used conveniently befause it conforms `Hashable` by default.  
+Type of enum can used conveniently because it conforms `Hashable` by default.  
 
 ```swift
 enum Section {
