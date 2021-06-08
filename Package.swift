@@ -11,7 +11,7 @@ let package = Package(
         .library(name: "DiffableDataSources", targets: ["DiffableDataSources"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ra1028/DifferenceKit.git", .upToNextMinor(from: "1.1.0"))
+        .package(url: "https://github.com/ra1028/DifferenceKit.git", .upToNextMinor(from: "1.2.0"))
     ],
     targets: [
         .target(
