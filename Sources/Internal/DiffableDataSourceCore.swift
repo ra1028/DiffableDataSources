@@ -68,7 +68,7 @@ final class DiffableDataSourceCore<SectionIdentifierType: Hashable, ItemIdentifi
             return nil
         }
 
-        return items[indexPath.item].differenceIdentifier
+        return items[indexPath.item].contentIdentifier
     }
 
     func unsafeItemIdentifier(for indexPath: IndexPath, file: StaticString = #file, line: UInt = #line) -> ItemIdentifierType {
@@ -83,7 +83,7 @@ final class DiffableDataSourceCore<SectionIdentifierType: Hashable, ItemIdentifi
         let indexPathMap: [ItemIdentifierType: IndexPath] = sections.enumerated()
             .reduce(into: [:]) { result, section in
                 for (itemIndex, item) in section.element.elements.enumerated() {
-                    result[item.differenceIdentifier] = IndexPath(
+                    result[item.contentIdentifier] = IndexPath(
                         item: itemIndex,
                         section: section.offset
                     )
