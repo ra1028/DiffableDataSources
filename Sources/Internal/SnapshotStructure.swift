@@ -56,6 +56,14 @@ struct SnapshotStructure<SectionID: Hashable, ItemID: Hashable> {
             .map { $0.differenceIdentifier }
     }
 
+    func numberOfItems(in sectionID: SectionID, file: StaticString = #file, line: UInt = #line) -> Int {
+        guard let sectionIndex = sectionIndex(of: sectionID) else {
+            specifiedSectionIsNotFound(sectionID, file: file, line: line)
+        }
+
+        return sections[sectionIndex].elements.count
+    }
+
     func items(in sectionID: SectionID, file: StaticString = #file, line: UInt = #line) -> [ItemID] {
         guard let sectionIndex = sectionIndex(of: sectionID) else {
             specifiedSectionIsNotFound(sectionID, file: file, line: line)
