@@ -7,7 +7,7 @@ import UIKit
 final class CollectionViewDiffableDataSourceTests: XCTestCase {
     func testInit() {
         let collectionView = MockCollectionView()
-        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView) { _, _, _ in
+        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView, forceFallback: true) { _, _, _ in
             UICollectionViewCell()
         }
 
@@ -16,11 +16,11 @@ final class CollectionViewDiffableDataSourceTests: XCTestCase {
 
     func testApply() {
         let collectionView = MockCollectionView()
-        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView) { _, _, _ in
+        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView, forceFallback: true) { _, _, _ in
             UICollectionViewCell()
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
 
         let e1 = expectation(description: "testApply() e1")
         dataSource.apply(snapshot, completion: e1.fulfill)
@@ -50,7 +50,7 @@ final class CollectionViewDiffableDataSourceTests: XCTestCase {
 
     func testSnapshot() {
         let collectionView = MockCollectionView()
-        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView) { _, _, _ in
+        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView, forceFallback: true) { _, _, _ in
             UICollectionViewCell()
         }
 
@@ -65,7 +65,7 @@ final class CollectionViewDiffableDataSourceTests: XCTestCase {
         XCTAssertEqual(snapshot3.sectionIdentifiers, [])
         XCTAssertEqual(snapshot3.itemIdentifiers, [])
 
-        var snapshotToApply = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshotToApply = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshotToApply.appendSections([0, 1, 2])
         snapshotToApply.appendItems([0, 1, 2])
         dataSource.apply(snapshotToApply)
@@ -92,11 +92,11 @@ final class CollectionViewDiffableDataSourceTests: XCTestCase {
 
     func testItemIdentifier() {
         let collectionView = MockCollectionView()
-        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView) { _, _, _ in
+        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView, forceFallback: true) { _, _, _ in
             UICollectionViewCell()
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)
@@ -107,11 +107,11 @@ final class CollectionViewDiffableDataSourceTests: XCTestCase {
 
     func testIndexPath() {
         let collectionView = MockCollectionView()
-        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView) { _, _, _ in
+        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView, forceFallback: true) { _, _, _ in
             UICollectionViewCell()
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)
@@ -122,13 +122,13 @@ final class CollectionViewDiffableDataSourceTests: XCTestCase {
 
     func testNumberOfSections() {
         let collectionView = MockCollectionView()
-        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView) { _, _, _ in
+        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView, forceFallback: true) { _, _, _ in
             UICollectionViewCell()
         }
 
         XCTAssertEqual(dataSource.numberOfSections(in: collectionView), 0)
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)
@@ -138,11 +138,11 @@ final class CollectionViewDiffableDataSourceTests: XCTestCase {
 
     func testNumberOfRowsInSection() {
         let collectionView = MockCollectionView()
-        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView) { _, _, _ in
+        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView, forceFallback: true) { _, _, _ in
             UICollectionViewCell()
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)
@@ -153,11 +153,11 @@ final class CollectionViewDiffableDataSourceTests: XCTestCase {
     func testCellForRowAt() {
         let collectionView = MockCollectionView()
         let cell = UICollectionViewCell()
-        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView) { _, _, _ in
+        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView, forceFallback: true) { _, _, _ in
             cell
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)
@@ -171,11 +171,11 @@ final class CollectionViewDiffableDataSourceTests: XCTestCase {
     func testCanMoveRowAt() {
         let collectionView = MockCollectionView()
         let cell = UICollectionViewCell()
-        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView) { _, _, _ in
+        let dataSource = CollectionViewDiffableDataSource<Int, Int>(collectionView: collectionView, forceFallback: true) { _, _, _ in
             cell
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)

@@ -7,7 +7,7 @@ import UIKit
 final class TableViewDiffableDataSourceTests: XCTestCase {
     func testInit() {
         let tableView = MockTableView()
-        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView) { _, _, _ in
+        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView, forceFallback: true) { _, _, _ in
             UITableViewCell()
         }
 
@@ -16,11 +16,11 @@ final class TableViewDiffableDataSourceTests: XCTestCase {
 
     func testApply() {
         let tableView = MockTableView()
-        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView) { _, _, _ in
+        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView, forceFallback: true) { _, _, _ in
             UITableViewCell()
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
 
         let e1 = expectation(description: "testApply() e1")
         dataSource.apply(snapshot, completion: e1.fulfill)
@@ -50,7 +50,7 @@ final class TableViewDiffableDataSourceTests: XCTestCase {
 
     func testSnapshot() {
         let tableView = MockTableView()
-        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView) { _, _, _ in
+        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView, forceFallback: true) { _, _, _ in
             UITableViewCell()
         }
 
@@ -65,7 +65,7 @@ final class TableViewDiffableDataSourceTests: XCTestCase {
         XCTAssertEqual(snapshot3.sectionIdentifiers, [])
         XCTAssertEqual(snapshot3.itemIdentifiers, [])
 
-        var snapshotToApply = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshotToApply = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshotToApply.appendSections([0, 1, 2])
         snapshotToApply.appendItems([0, 1, 2])
         dataSource.apply(snapshotToApply)
@@ -92,11 +92,11 @@ final class TableViewDiffableDataSourceTests: XCTestCase {
 
     func testItemIdentifier() {
         let tableView = MockTableView()
-        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView) { _, _, _ in
+        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView, forceFallback: true) { _, _, _ in
             UITableViewCell()
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)
@@ -107,11 +107,11 @@ final class TableViewDiffableDataSourceTests: XCTestCase {
 
     func testIndexPath() {
         let tableView = MockTableView()
-        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView) { _, _, _ in
+        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView, forceFallback: true) { _, _, _ in
             UITableViewCell()
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)
@@ -122,13 +122,13 @@ final class TableViewDiffableDataSourceTests: XCTestCase {
 
     func testNumberOfSections() {
         let tableView = MockTableView()
-        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView) { _, _, _ in
+        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView, forceFallback: true) { _, _, _ in
             UITableViewCell()
         }
 
         XCTAssertEqual(dataSource.numberOfSections(in: tableView), 0)
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)
@@ -138,11 +138,11 @@ final class TableViewDiffableDataSourceTests: XCTestCase {
 
     func testNumberOfRowsInSection() {
         let tableView = MockTableView()
-        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView) { _, _, _ in
+        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView, forceFallback: true) { _, _, _ in
             UITableViewCell()
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)
@@ -153,11 +153,11 @@ final class TableViewDiffableDataSourceTests: XCTestCase {
     func testCellForRowAt() {
         let tableView = MockTableView()
         let cell = UITableViewCell()
-        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView) { _, _, _ in
+        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView, forceFallback: true) { _, _, _ in
             cell
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)
@@ -171,11 +171,11 @@ final class TableViewDiffableDataSourceTests: XCTestCase {
     func testCanEditRowAt() {
         let tableView = MockTableView()
         let cell = UITableViewCell()
-        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView) { _, _, _ in
+        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView, forceFallback: true) { _, _, _ in
             cell
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)
@@ -189,11 +189,11 @@ final class TableViewDiffableDataSourceTests: XCTestCase {
     func testCanMoveRowAt() {
         let tableView = MockTableView()
         let cell = UITableViewCell()
-        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView) { _, _, _ in
+        let dataSource = TableViewDiffableDataSource<Int, Int>(tableView: tableView, forceFallback: true) { _, _, _ in
             cell
         }
 
-        var snapshot = DiffableDataSourceSnapshot<Int, Int>()
+        var snapshot = DiffableDataSourceSnapshot<Int, Int>(forceFallback: true)
         snapshot.appendSections([0, 1, 2])
         snapshot.appendItems([0, 1, 2], toSection: 0)
         dataSource.apply(snapshot)
