@@ -19,17 +19,45 @@ open class CollectionViewDiffableDataSource<SectionIdentifierType: Hashable, Ite
     private weak var collectionView: UICollectionView?
     private let cellProvider: CellProvider
     private let core = DiffableDataSourceCore<SectionIdentifierType, ItemIdentifierType>()
+    private let forceFallback: Bool
+    private var _nativeDataSource: Any?
+    @available(iOS 13.0, *)
+    private var nativeDataSource: UICollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> {
+        get {
+            guard let nativeDataSource = _nativeDataSource as? UICollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> else {
+                fatalError()
+            }
+            return nativeDataSource
+        }
+        set {
+            _nativeDataSource = newValue
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func createNativeDataSource(for collectionView: UICollectionView, cellProvider: @escaping CellProvider) {
+        _nativeDataSource = UICollectionViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType>(collectionView: collectionView, cellProvider: cellProvider)
+    }
 
     /// Creates a new data source.
     ///
     /// - Parameters:
     ///   - collectionView: A collection view instance to be managed.
     ///   - cellProvider: A closure to dequeue the cell for items.
-    public init(collectionView: UICollectionView, cellProvider: @escaping CellProvider) {
+    public convenience init(collectionView: UICollectionView, cellProvider: @escaping CellProvider) {
+        self.init(collectionView: collectionView, forceFallback: false, cellProvider: cellProvider)
+    }
+
+    internal init(collectionView: UICollectionView, forceFallback: Bool, cellProvider: @escaping CellProvider) {
         self.collectionView = collectionView
         self.cellProvider = cellProvider
+        self.forceFallback = forceFallback
         super.init()
 
+        if #available(iOS 13, *), !forceFallback {
+            createNativeDataSource(for: collectionView, cellProvider: cellProvider)
+            return
+        }
         collectionView.dataSource = self
     }
 
@@ -42,13 +70,17 @@ open class CollectionViewDiffableDataSource<SectionIdentifierType: Hashable, Ite
     ///   - completion: An optional completion block which is called when the complete
     ///                 performing updates.
     public func apply(_ snapshot: DiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
+        if #available(iOS 13, *), !forceFallback {
+            nativeDataSource.apply(snapshot.nativeSnapshot, animatingDifferences: animatingDifferences, completion: completion)
+            return
+        }
         core.apply(
             snapshot,
             view: collectionView,
             animatingDifferences: animatingDifferences,
             performUpdates: { collectionView, changeset, setSections in
                 collectionView.reload(using: changeset, setData: setSections)
-        },
+            },
             completion: completion
         )
     }
@@ -57,7 +89,10 @@ open class CollectionViewDiffableDataSource<SectionIdentifierType: Hashable, Ite
     ///
     /// - Returns: A new snapshot object of current state.
     public func snapshot() -> DiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType> {
-        return core.snapshot()
+        if #available(iOS 13, *), !forceFallback {
+            return .from(nativeSnapshot: nativeDataSource.snapshot())
+        }
+        return core.snapshot(forceFallback: forceFallback)
     }
 
     /// Returns an item identifier for given index path.
@@ -67,6 +102,9 @@ open class CollectionViewDiffableDataSource<SectionIdentifierType: Hashable, Ite
     ///
     /// - Returns: An item identifier for given index path.
     public func itemIdentifier(for indexPath: IndexPath) -> ItemIdentifierType? {
+        if #available(iOS 13, *), !forceFallback {
+            return nativeDataSource.itemIdentifier(for: indexPath)
+        }
         return core.itemIdentifier(for: indexPath)
     }
 
@@ -77,6 +115,9 @@ open class CollectionViewDiffableDataSource<SectionIdentifierType: Hashable, Ite
     ///
     /// - Returns: An index path for given item identifier.
     public func indexPath(for itemIdentifier: ItemIdentifierType) -> IndexPath? {
+        if #available(iOS 13, *), !forceFallback {
+            return nativeDataSource.indexPath(for: itemIdentifier)
+        }
         return core.indexPath(for: itemIdentifier)
     }
 
@@ -87,6 +128,9 @@ open class CollectionViewDiffableDataSource<SectionIdentifierType: Hashable, Ite
     ///
     /// - Returns: The number of sections in the data source.
     public func numberOfSections(in collectionView: UICollectionView) -> Int {
+        if #available(iOS 13, *), !forceFallback {
+            return nativeDataSource.numberOfSections(in: collectionView)
+        }
         return core.numberOfSections()
     }
 
@@ -98,6 +142,9 @@ open class CollectionViewDiffableDataSource<SectionIdentifierType: Hashable, Ite
     ///
     /// - Returns: The number of items in the specified section.
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        if #available(iOS 13, *), !forceFallback {
+            return nativeDataSource.collectionView(collectionView, numberOfItemsInSection: section)
+        }
         return core.numberOfItems(inSection: section)
     }
 
@@ -109,6 +156,9 @@ open class CollectionViewDiffableDataSource<SectionIdentifierType: Hashable, Ite
     ///
     /// - Returns: A cell for row at specified index path.
     open func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if #available(iOS 13, *), !forceFallback {
+            return nativeDataSource.collectionView(collectionView, cellForItemAt: indexPath)
+        }
         let itemIdentifier = core.unsafeItemIdentifier(for: indexPath)
         guard let cell = cellProvider(collectionView, indexPath, itemIdentifier) else {
             universalError("UICollectionView dataSource returned a nil cell for item at index path: \(indexPath), collectionView: \(collectionView), itemIdentifier: \(itemIdentifier)")
@@ -126,6 +176,9 @@ open class CollectionViewDiffableDataSource<SectionIdentifierType: Hashable, Ite
     ///
     /// - Returns: A supplementary view for element of kind at specified index path.
     open func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if #available(iOS 13, *), !forceFallback {
+            return nativeDataSource.collectionView(collectionView, viewForSupplementaryElementOfKind: kind, at: indexPath)
+        }
         guard let view = supplementaryViewProvider?(collectionView, kind, indexPath) else {
             return UICollectionReusableView()
         }

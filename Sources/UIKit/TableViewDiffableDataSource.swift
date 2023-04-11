@@ -16,17 +16,45 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
     private weak var tableView: UITableView?
     private let cellProvider: CellProvider
     private let core = DiffableDataSourceCore<SectionIdentifierType, ItemIdentifierType>()
+    private let forceFallback: Bool
+    private var _nativeDataSource: Any?
+    @available(iOS 13.0, *)
+    private var nativeDataSource: UITableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> {
+        get {
+            guard let nativeDataSource = _nativeDataSource as? UITableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType> else {
+                fatalError()
+            }
+            return nativeDataSource
+        }
+        set {
+            _nativeDataSource = newValue
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func createNativeDataSource(for tableView: UITableView, cellProvider: @escaping CellProvider) {
+        _nativeDataSource = UITableViewDiffableDataSource<SectionIdentifierType, ItemIdentifierType>(tableView: tableView, cellProvider: cellProvider)
+    }
 
     /// Creates a new data source.
     ///
     /// - Parameters:
     ///   - tableView: A table view instance to be managed.
     ///   - cellProvider: A closure to dequeue the cell for rows.
-    public init(tableView: UITableView, cellProvider: @escaping CellProvider) {
+    public convenience init(tableView: UITableView, cellProvider: @escaping CellProvider) {
+        self.init(tableView: tableView, forceFallback: false, cellProvider: cellProvider)
+    }
+
+    internal init(tableView: UITableView, forceFallback: Bool, cellProvider: @escaping CellProvider) {
         self.tableView = tableView
         self.cellProvider = cellProvider
+        self.forceFallback = forceFallback
         super.init()
 
+        if #available(iOS 13, *), !forceFallback {
+            createNativeDataSource(for: tableView, cellProvider: cellProvider)
+            return
+        }
         tableView.dataSource = self
     }
 
@@ -39,13 +67,17 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
     ///   - completion: An optional completion block which is called when the complete
     ///                 performing updates.
     public func apply(_ snapshot: DiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType>, animatingDifferences: Bool = true, completion: (() -> Void)? = nil) {
+        if #available(iOS 13, *), !forceFallback {
+            nativeDataSource.apply(snapshot.nativeSnapshot, animatingDifferences: animatingDifferences, completion: completion)
+            return
+        }
         core.apply(
             snapshot,
             view: tableView,
             animatingDifferences: animatingDifferences,
             performUpdates: { tableView, changeset, setSections in
                 tableView.reload(using: changeset, with: self.defaultRowAnimation, setData: setSections)
-        },
+            },
             completion: completion
         )
     }
@@ -54,7 +86,10 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
     ///
     /// - Returns: A new snapshot object of current state.
     public func snapshot() -> DiffableDataSourceSnapshot<SectionIdentifierType, ItemIdentifierType> {
-        return core.snapshot()
+        if #available(iOS 13, *), !forceFallback {
+            return .from(nativeSnapshot: nativeDataSource.snapshot())
+        }
+        return core.snapshot(forceFallback: forceFallback)
     }
 
     /// Returns an item identifier for given index path.
@@ -64,6 +99,9 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
     ///
     /// - Returns: An item identifier for given index path.
     public func itemIdentifier(for indexPath: IndexPath) -> ItemIdentifierType? {
+        if #available(iOS 13, *), !forceFallback {
+            return nativeDataSource.itemIdentifier(for: indexPath)
+        }
         return core.itemIdentifier(for: indexPath)
     }
 
@@ -74,6 +112,9 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
     ///
     /// - Returns: An index path for given item identifier.
     public func indexPath(for itemIdentifier: ItemIdentifierType) -> IndexPath? {
+        if #available(iOS 13, *), !forceFallback {
+            return nativeDataSource.indexPath(for: itemIdentifier)
+        }
         return core.indexPath(for: itemIdentifier)
     }
 
@@ -84,6 +125,9 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
     ///
     /// - Returns: The number of sections in the data source.
     public func numberOfSections(in tableView: UITableView) -> Int {
+        if #available(iOS 13, *), !forceFallback {
+            return nativeDataSource.numberOfSections(in: tableView)
+        }
         return core.numberOfSections()
     }
 
@@ -95,6 +139,9 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
     ///
     /// - Returns: The number of items in the specified section.
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if #available(iOS 13, *), !forceFallback {
+            return nativeDataSource.tableView(tableView, numberOfRowsInSection: section)
+        }
         return core.numberOfItems(inSection: section)
     }
 
@@ -128,6 +175,9 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
     ///
     /// - Returns: A cell for row at specified index path.
     open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if #available(iOS 13, *), !forceFallback {
+            return nativeDataSource.tableView(tableView, cellForRowAt: indexPath)
+        }
         let itemIdentifier = core.unsafeItemIdentifier(for: indexPath)
         guard let cell = cellProvider(tableView, indexPath, itemIdentifier) else {
             universalError("UITableView dataSource returned a nil cell for row at index path: \(indexPath), tableView: \(tableView), itemIdentifier: \(itemIdentifier)")
@@ -143,7 +193,7 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
     ///   - section: An index of section.
     ///
     /// - Returns: A boolean for row at specified index path.
-    open func tableView(_ tableView: UITableView, canEditRowAt: IndexPath) -> Bool {
+    open func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         return false
     }
 
@@ -154,7 +204,7 @@ open class TableViewDiffableDataSource<SectionIdentifierType: Hashable, ItemIden
     ///   - section: An index of section.
     ///
     /// - Returns: A boolean for row at specified index path.
-    open func tableView(_ tableView: UITableView, canMoveRowAt _: IndexPath) -> Bool {
+    open func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
         return false
     }
 
